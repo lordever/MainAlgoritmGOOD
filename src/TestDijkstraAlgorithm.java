@@ -1,8 +1,6 @@
 import org.junit.Test;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -12,41 +10,39 @@ public class TestDijkstraAlgorithm {
     private List<Vertex> nodes;
     private List<Edge> edges;
 
-    @Test
     public void testExcute() {
+
+        List<CityDistance> cities = getCities();
+
         nodes = new ArrayList<Vertex>();
         edges = new ArrayList<Edge>();
-        for (int i = 0; i < 11; i++) {
-            Vertex location = new Vertex("Node_" + i, "Node_" + i);
+
+        String[] citiesAll = {"Toliatty", "Samara", "Demitrovgrad", "Ulianovsk", "Riazan", "Moscow"};
+
+        for (int i = 0; i < citiesAll.length; i++) {
+            Vertex location = new Vertex(citiesAll[i], citiesAll[i]);
             nodes.add(location);
         }
 
-        addLane("Edge_0", 0, 1, 85);
-        addLane("Edge_1", 0, 2, 217);
-        addLane("Edge_2", 0, 4, 173);
-        addLane("Edge_3", 2, 6, 186);
-        addLane("Edge_4", 2, 7, 103);
-        addLane("Edge_5", 3, 7, 183);
-        addLane("Edge_6", 5, 8, 250);
-        addLane("Edge_7", 8, 9, 84);
-        addLane("Edge_8", 7, 9, 167);
-        addLane("Edge_9", 4, 9, 502);
-        addLane("Edge_10", 9, 10, 40);
-        addLane("Edge_11", 1, 10, 600);
+        cities = getConvertList(cities, nodes);
+        for(int i = 0; i < cities.size(); i++) {
+            addLane("Edge_"+i,
+                    Integer.valueOf(cities.get(i).getFirstCity()),
+                    Integer.valueOf(cities.get(i).getSecondCity()),
+                    cities.get(i).getDistance());
+        }
 
         // Lets check from location Loc_1 to Loc_10
         Graph graph = new Graph(nodes, edges);
         DijkstraAlgorithm dijkstra = new DijkstraAlgorithm(graph);
         dijkstra.execute(nodes.get(0));
-        LinkedList<Vertex> path = dijkstra.getPath(nodes.get(10));
-
-        assertNotNull(path);
-        assertTrue(path.size() > 0);
+        LinkedList<Vertex> path = dijkstra.getPath(nodes.get(5));
 
         for (Vertex vertex : path) {
-            System.out.println(vertex);
+            System.out.println(vertex.getName());
         }
 
+        System.out.println("Min distance: "+dijkstra.getShortDistance());
     }
 
     private void addLane(String laneId, int sourceLocNo, int destLocNo,
@@ -54,4 +50,50 @@ public class TestDijkstraAlgorithm {
         Edge lane = new Edge(laneId, nodes.get(sourceLocNo), nodes.get(destLocNo), duration);
         edges.add(lane);
     }
+
+    public static List<CityDistance> getCities(){
+        List<CityDistance> cities = new ArrayList<>();
+
+        CityDistance tolSam = new CityDistance(1,"Toliatty", "Samara", 1);
+        CityDistance tolDem = new CityDistance(2,"Toliatty", "Demitrovgrad", 2);
+        CityDistance tolUl = new CityDistance(3,"Toliatty", "Ulianovsk", 3);
+        CityDistance samRiazan = new CityDistance(4,"Samara", "Riazan", 6);
+        CityDistance samUl = new CityDistance(5,"Samara", "Ulianovsk", 2);
+        CityDistance demUl = new CityDistance(6,"Demitrovgrad", "Ulianovsk", 3);
+        CityDistance demRiazan = new CityDistance(7,"Demitrovgrad", "Riazan", 4);
+        CityDistance demMoscow = new CityDistance(8,"Demitrovgrad", "Moscow", 6);
+        CityDistance ulMoscow = new CityDistance(9,"Ulianovsk", "Moscow", 5);
+        CityDistance riazanMoscow = new CityDistance(10,"Riazan", "Moscow", 2);
+        CityDistance riazanUl = new CityDistance(11, "Riazan", "Ulianovsk", 3);
+
+        cities.add(tolSam);
+        cities.add(tolDem);
+        cities.add(tolUl);
+        cities.add(samRiazan);
+        cities.add(samUl);
+        cities.add(demUl);
+        cities.add(demRiazan);
+        cities.add(demMoscow);
+        cities.add(ulMoscow);
+        cities.add(riazanMoscow);
+        cities.add(riazanUl);
+
+        return cities;
+    }
+
+    public static List<CityDistance> getConvertList(List<CityDistance> cities, List<Vertex> nodes){
+        for(int i = 0; i < nodes.size(); i++) {
+            for(int j = 0; j < cities.size(); j++) {
+                if(cities.get(j).getFirstCity() == nodes.get(i).getName()){
+                    cities.get(j).setFirstCity(String.valueOf(i));
+                }
+                if(cities.get(j).getSecondCity() == nodes.get(i).getName()){
+                    cities.get(j).setSecondCity(String.valueOf(i));
+                }
+            }
+        }
+        return cities;
+    }
 }
+
+

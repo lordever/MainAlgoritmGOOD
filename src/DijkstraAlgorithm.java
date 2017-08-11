@@ -7,6 +7,16 @@ public class DijkstraAlgorithm {
     private Set<Vertex> unSettledNodes;
     private Map<Vertex, Vertex> predecessors;
     private Map<Vertex, Integer> distance;
+    private Integer shortDistance = 0;
+
+
+    public Map<Vertex, Integer> getDistance() {
+        return distance;
+    }
+
+    public Integer getShortDistance() {
+        return shortDistance;
+    }
 
     public DijkstraAlgorithm(Graph graph) {
         // create a copy of the array so that we can operate on this array
@@ -21,6 +31,8 @@ public class DijkstraAlgorithm {
         predecessors = new HashMap<Vertex, Vertex>();
         distance.put(source, 0);
         unSettledNodes.add(source);
+
+
         while (unSettledNodes.size() > 0) {
             Vertex node = getMinimum(unSettledNodes);
             settledNodes.add(node);
@@ -36,11 +48,17 @@ public class DijkstraAlgorithm {
                     + getDistance(node, target)) {
                 distance.put(target, getShortestDistance(node)
                         + getDistance(node, target));
+//                if(shortDistance == 0){
+//                    shortDistance = getShortestDistance(node) + getDistance(node, target);
+//                }if(shortDistance > getShortestDistance(node) + getDistance(node, target)){
+//                    shortDistance = getShortestDistance(node) + getDistance(node, target);
+//                }
+
                 predecessors.put(target, node);
                 unSettledNodes.add(target);
             }
+//            System.out.println(shortDistance);
         }
-
     }
 
     private int getDistance(Vertex node, Vertex target) {
